@@ -1,12 +1,13 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using LoginIdentity.Models;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 
 namespace LoginIdentity.Controllers;
-
 public class AccountController : Controller
 {
     // GET
-    public IActionResult Index()
+    public IActionResult Login()
     {
-        return View();
+        return View(new LoginViewModel());
     }
 }
