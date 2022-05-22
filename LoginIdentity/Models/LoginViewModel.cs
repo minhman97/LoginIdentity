@@ -1,22 +1,22 @@
-﻿using Microsoft.AspNetCore.Authentication;
+﻿using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Authentication;
 
 namespace LoginIdentity.Models;
 
 public class LoginViewModel
 {
-    private IList<AuthenticationScheme> _externalLogins;
-    public string ReturnUrl { get; set; }
     public LoginViewModel()
     {
+        ExternalLogins = new List<AuthenticationScheme>();
     }
 
+    public string ReturnUrl { get; set; }
+    [Required(ErrorMessage = "Please input Username.")]
     public string Email { get; set; } = string.Empty;
+    [Required(ErrorMessage = "Please input Password.")]
     public string Password { get; set; } = string.Empty;
+
     public bool RememberMe { get; set; } = false;
 
-    public IList<AuthenticationScheme> ExternalLogins
-    {
-        get => _externalLogins;
-        set => _externalLogins = value;
-    }
+    public IList<AuthenticationScheme> ExternalLogins { get; set; }
 }
