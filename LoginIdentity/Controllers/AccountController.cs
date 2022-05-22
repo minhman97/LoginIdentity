@@ -1,5 +1,4 @@
 ﻿using System.Text;
-using System.Text.Encodings.Web;
 using LoginIdentity.Models;
 using LoginIdentity.Services;
 using Microsoft.AspNetCore.Identity;
@@ -28,6 +27,25 @@ public class AccountController : Controller
         return View(new LoginViewModel());
     }
 
+    [HttpPost]
+    public async Task<IActionResult> Login(LoginViewModel model)
+    {
+        if (ModelState.IsValid)
+        {
+            var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, false, false);
+            if (result.Succeeded) return LocalRedirect("~/");
+        }
+
+        return View(model);
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> Logout()
+    {
+        await _signInManager.SignOutAsync();
+        return LocalRedirect("~/");
+    }
+
     public IActionResult Register()
     {
         return View();
@@ -38,6 +56,13 @@ public class AccountController : Controller
     {
         if (ModelState.IsValid)
         {
+            var userExisted = await _userManager.FindByEmailAsync(model.Email);
+            if (userExisted != null)
+            {
+                ModelState.AddModelError("", "Email existed");
+                return View(model);
+            }
+
             var result = await _userManager.CreateAsync(new IdentityUser
             {
                 UserName = model.Email,
@@ -55,8 +80,8 @@ public class AccountController : Controller
                     userId = user.Id, token, phoneNumber = model.PhoneNumber
                 });
 
-                await _notifyService.SendSms(model.PhoneNumber,
-                    $"Please confirm your phone number by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
+                // await _notifyService.SendSms(model.PhoneNumber,
+                //     $"Please confirm your phone number by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
 
 
                 await _signInManager.SignInAsync(user, false);
