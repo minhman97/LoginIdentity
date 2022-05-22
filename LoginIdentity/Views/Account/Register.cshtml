@@ -4,6 +4,9 @@
     Layout = "_LoginLayout";
     ViewData["Title"] = "Register";
 }
+<div class="text-danger" asp-validation-summary="ModelOnly">
+
+</div>
 <form method="post">
     <div class="py-md-4">
         <h1>@ViewData["Title"]</h1>
@@ -20,7 +23,7 @@
     </div>
     <div class="form-group">
         <label asp-for="DateOfBirth"></label>
-        <input asp-for="DateOfBirth" class="form-control"/>
+        <input asp-for="DateOfBirth" class="form-control datepicker"/>
         <span asp-validation-for="DateOfBirth" class="text-danger"></span>
     </div>
     <div class="form-group">
@@ -52,4 +55,9 @@
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial"/>
+    <script type="text/javascript">
+    $(document).ready(function () {
+            $('.datepicker').datepicker();
+        });
+    </script>
 }
