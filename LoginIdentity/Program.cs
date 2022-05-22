@@ -1,8 +1,8 @@
-
+using LoginIdentity.Configuration;
+using LoginIdentity.Data;
+using LoginIdentity.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-
-using LoginIdentity.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 var connectionStr = builder.Configuration.GetConnectionString("LoginIdentity");
@@ -12,21 +12,17 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddDbContext<LoginIdentityContext>(options =>
     options.UseSqlServer(connectionStr));
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
-builder.Services.AddDefaultIdentity<IdentityUser>(options =>
-{
-    options.SignIn.RequireConfirmedAccount = true;
-    
-}).AddEntityFrameworkStores<LoginIdentityContext>();
+builder.Services.AddDefaultIdentity<IdentityUser>(options => { options.SignIn.RequireConfirmedAccount = true; })
+    .AddEntityFrameworkStores<LoginIdentityContext>();
 
 builder.Services.Configure<IdentityOptions>(options =>
 {
     // Password settings.
-    options.Password.RequireDigit = true;
-    options.Password.RequireLowercase = true;
-    options.Password.RequireNonAlphanumeric = true;
-    options.Password.RequireUppercase = true;
-    options.Password.RequiredLength = 6;
-    options.Password.RequiredUniqueChars = 1;
+    options.Password.RequireDigit = false;
+    options.Password.RequireLowercase = false;
+    options.Password.RequireNonAlphanumeric = false;
+    options.Password.RequireUppercase = false;
+    options.Password.RequiredLength = 1;
 
     // Lockout settings.
     options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
@@ -50,6 +46,10 @@ builder.Services.ConfigureApplicationCookie(options =>
     options.SlidingExpiration = true;
 });
 
+builder.Services.Configure<TwilioConfiguration>(builder.Configuration.GetSection("Twilio"));
+
+builder.Services.AddScoped<INotifyService, NotifyService>();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -63,7 +63,6 @@ else
 {
     app.UseDeveloperExceptionPage();
     app.UseMigrationsEndPoint();
-   
 }
 
 app.UseHttpsRedirection();
@@ -74,7 +73,7 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllerRoute(
-    name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
+    "default",
+    "{controller=Home}/{action=Index}/{id?}");
 
 app.Run();
