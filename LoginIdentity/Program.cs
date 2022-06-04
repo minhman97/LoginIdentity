@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 var builder = WebApplication.CreateBuilder(args);
 var connectionStr = builder.Configuration.GetConnectionString("LoginIdentity");
 // Add services to the container.
-builder.Services.AddControllersWithViews();
+builder.Services.AddControllersWithViews().AddRazorRuntimeCompilation();
 
 builder.Services.AddDbContext<LoginIdentityContext>(options =>
     options.UseSqlServer(connectionStr));
