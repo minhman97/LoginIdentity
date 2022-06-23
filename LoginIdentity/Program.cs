@@ -1,6 +1,7 @@
 using LoginIdentity.Configuration;
 using LoginIdentity.Data;
 using LoginIdentity.Services;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -48,11 +49,15 @@ builder.Services.ConfigureApplicationCookie(options =>
     options.LoginPath = "/Account/Login";
     options.AccessDeniedPath = "/Identity/Account/AccessDenied";
     options.SlidingExpiration = true;
+    options.ReturnUrlParameter = CookieAuthenticationDefaults.ReturnUrlParameter;
 });
 
 builder.Services.Configure<TwilioConfiguration>(builder.Configuration.GetSection("Twilio"));
+builder.Services.Configure<MailSettings>(builder.Configuration.GetSection("MailSettings"));
 
 builder.Services.AddScoped<INotifyService, NotifyService>();
+
+builder.Services.AddTransient<IEmailService, EmailService>();
 
 var app = builder.Build();
 
